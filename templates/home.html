@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}หน้าแรก - ระบบจัดการไฟล์แผนกอายุรกรรม{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="text-center mb-5">
+            <h1 class="display-4 text-primary">
+                <i class="fas fa-hospital me-3"></i>แผนกอายุรกรรม
+            </h1>
+            <p class="lead">โรงพยาบาลสงฆ์</p>
+            <p class="text-muted">ระบบจัดการไฟล์และข้อมูลสำหรับบุคลากรทางการแพทย์</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4 text-center">หน่วยงานในแผนกอายุรกรรม</h2>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for dept in departments %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm hover-card">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    {% if dept.code == 'DM' %}
+                        <i class="fas fa-syringe fa-3x text-danger"></i>
+                    {% elif dept.code == 'COPD' %}
+                        <i class="fas fa-lungs fa-3x text-info"></i>
+                    {% elif dept.code == 'UGIB' %}
+                        <i class="fas fa-tint fa-3x text-danger"></i>
+                    {% elif dept.code == 'CKD' %}
+                        <img src="{{ url_for('static', filename='images/kidney.svg') }}" alt="หน่วยไตเรื้อรัง" class="department-icon" style="width: 80px; height: 80px; object-fit: contain;">
+                    {% elif dept.code == 'STEMI_NSTEMI' %}
+                        <i class="fas fa-heartbeat fa-3x text-danger"></i>
+                    {% elif dept.code == 'STROKE' %}
+                        <i class="fas fa-brain fa-3x text-primary"></i>
+                    {% elif dept.code == 'TB' %}
+                        <i class="fas fa-bacteria fa-3x text-success"></i>
+                    {% elif dept.code == 'CHEMO' %}
+                        <i class="fas fa-pills fa-3x text-purple"></i>
+                    {% elif dept.code == 'HTN' %}
+                        <i class="fas fa-heart-pulse fa-3x text-danger"></i>
+                    {% endif %}
+                </div>
+                <h5 class="card-title">{{ dept.name }}</h5>
+                <p class="card-text text-muted">{{ dept.description }}</p>
+                <a href="{{ url_for('department', dept_id=dept.id) }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-right me-2"></i>เข้าดูข้อมูล
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h4><i class="fas fa-info-circle me-2"></i>ข้อมูลเพิ่มเติม</h4>
+                <p class="mb-0">ระบบนี้จัดทำขึ้นเพื่ออำนวยความสะดวกในการเข้าถึงข้อมูลและไฟล์ต่างๆ ของแผนกอายุรกรรม</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

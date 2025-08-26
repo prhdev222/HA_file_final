@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}จัดการข้อมูลการติดต่อ - แอดมิน{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-address-book me-2"></i>จัดการข้อมูลการติดต่อ</h2>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>กลับไปหน้าแดชบอร์ด
+                </a>
+            </div>
+
+            <!-- สถิติ -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body">
+                            <h5 class="card-title">จำนวนข้อมูลการติดต่อ</h5>
+                            <h2>{{ contacts|length }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ตารางข้อมูลการติดต่อ -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>รายการข้อมูลการติดต่อ</h5>
+                </div>
+                <div class="card-body">
+                    {% if contacts %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ลำดับ</th>
+                                        <th>หน่วยงาน</th>
+                                        <th>Line ID</th>
+                                        <th>อีเมล</th>
+                                        <th>เบอร์โทรศัพท์</th>
+                                        <th>ข้อมูลอื่นๆ</th>
+                                        <th>การจัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for contact in contacts %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ contact.department.name }}</span>
+                                        </td>
+                                        <td>
+                                            {% if contact.line_id %}
+                                                <i class="fab fa-line me-2"></i>{{ contact.line_id }}
+                                            {% else %}
+                                                <span class="text-muted">ไม่ระบุ</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if contact.email %}
+                                                <i class="fas fa-envelope me-2"></i>{{ contact.email }}
+                                            {% else %}
+                                                <span class="text-muted">ไม่ระบุ</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if contact.phone %}
+                                                <i class="fas fa-phone me-2"></i>{{ contact.phone }}
+                                            {% else %}
+                                                <span class="text-muted">ไม่ระบุ</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if contact.other_contact %}
+                                                {{ contact.other_contact[:50] }}{% if contact.other_contact|length > 50 %}...{% endif %}
+                                            {% else %}
+                                                <span class="text-muted">ไม่มี</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                        onclick="editContact({{ contact.id }})">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        onclick="deleteContact({{ contact.id }})">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-address-book fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">ยังไม่มีข้อมูลการติดต่อ</h5>
+                            <p class="text-muted">คลิกปุ่มด้านล่างเพื่อเพิ่มข้อมูลการติดต่อใหม่</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ปุ่มเพิ่มข้อมูลการติดต่อใหม่ -->
+            <div class="text-center mt-4">
+                <button type="button" class="btn btn-success btn-lg" onclick="addNewContact()">
+                    <i class="fas fa-plus me-2"></i>เพิ่มข้อมูลการติดต่อใหม่
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal สำหรับเพิ่ม/แก้ไขข้อมูลการติดต่อ -->
+<div class="modal fade" id="contactModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="contactModalTitle">เพิ่มข้อมูลการติดต่อใหม่</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="contactForm">
+                    <div class="mb-3">
+                        <label for="contactDepartment" class="form-label">หน่วยงาน *</label>
+                        <select class="form-select" id="contactDepartment" required>
+                            <option value="">เลือกหน่วยงาน</option>
+                            <option value="1">หน่วยเบาหวาน</option>
+                            <option value="2">หน่วยปอดอุดกั้นเรื้อรัง</option>
+                            <option value="3">หน่วยเลือดออกทางเดินอาหารส่วนต้น</option>
+                            <option value="4">หน่วยไตเรื้อรัง</option>
+                            <option value="5">หน่วยหัวใจขาดเลือด</option>
+                            <option value="6">หน่วยโรคหลอดเลือดสมอง</option>
+                            <option value="7">หน่วยวัณโรค</option>
+                            <option value="8">หน่วยเคมีบำบัด</option>
+                            <option value="9">หน่วยความดันโลหิตสูง</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactLineId" class="form-label">Line ID</label>
+                        <input type="text" class="form-control" id="contactLineId" 
+                               placeholder="เช่น @username หรือ username">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactEmail" class="form-label">อีเมล</label>
+                        <input type="email" class="form-control" id="contactEmail" 
+                               placeholder="example@hospital.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactPhone" class="form-label">เบอร์โทรศัพท์</label>
+                        <input type="tel" class="form-control" id="contactPhone" 
+                               placeholder="081-234-5678">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactOther" class="form-label">ข้อมูลอื่นๆ</label>
+                        <textarea class="form-control" id="contactOther" rows="3" 
+                                  placeholder="ข้อมูลการติดต่ออื่นๆ เช่น เวลาทำการ, ที่อยู่..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                <button type="button" class="btn btn-primary" onclick="saveContact()">บันทึก</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function addNewContact() {
+    document.getElementById('contactModalTitle').textContent = 'เพิ่มข้อมูลการติดต่อใหม่';
+    document.getElementById('contactForm').reset();
+    new bootstrap.Modal(document.getElementById('contactModal')).show();
+}
+
+function editContact(id) {
+    // TODO: ดึงข้อมูลการติดต่อและแสดงในฟอร์ม
+    alert('ฟีเจอร์แก้ไขข้อมูลการติดต่อจะเปิดใช้งานเร็วๆ นี้');
+}
+
+function deleteContact(id) {
+    if (confirm('คุณแน่ใจหรือไม่ที่จะลบข้อมูลการติดต่อนี้?')) {
+        // TODO: ลบข้อมูลการติดต่อ
+        alert('ฟีเจอร์ลบข้อมูลการติดต่อจะเปิดใช้งานเร็วๆ นี้');
+    }
+}
+
+function saveContact() {
+    // TODO: บันทึกข้อมูลการติดต่อ
+    alert('ฟีเจอร์บันทึกข้อมูลการติดต่อจะเปิดใช้งานเร็วๆ นี้');
+}
+</script>
+{% endblock %}

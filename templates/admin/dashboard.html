@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}แดชบอร์ด - ระบบจัดการไฟล์แผนกอายุรกรรม{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-tachometer-alt me-2"></i>แดชบอร์ดแอดมิน
+        </h1>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ stats.departments }}</h4>
+                        <p class="mb-0">หน่วยงาน</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-hospital fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ stats.guidelines }}</h4>
+                        <p class="mb-0">ไฟล์ Guidelines</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-file-medical fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ stats.knowledge }}</h4>
+                        <p class="mb-0">ข้อมูลความรู้</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-book-medical fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ stats.activities }}</h4>
+                        <p class="mb-0">กิจกรรม</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>การดำเนินการด่วน</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a href="{{ url_for('upload_guideline') }}" class="btn btn-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                            <i class="fas fa-upload fa-2x mb-2"></i>
+                            <span>อัปโหลด Guidelines</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('admin_guidelines') }}" class="btn btn-success w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                            <i class="fas fa-file-medical fa-2x mb-2"></i>
+                            <span>จัดการ Guidelines</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('admin_knowledge') }}" class="btn btn-info w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                            <i class="fas fa-book-medical fa-2x mb-2"></i>
+                            <span>จัดการความรู้</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('admin_activities') }}" class="btn btn-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                            <i class="fas fa-calendar-alt fa-2x mb-2"></i>
+                            <span>จัดการกิจกรรม</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Management Sections -->
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-hospital me-2"></i>จัดการหน่วยงาน</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">จัดการข้อมูลหน่วยงานต่างๆ ในแผนกอายุรกรรม</p>
+                <a href="{{ url_for('admin_departments') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-cog me-2"></i>จัดการหน่วยงาน
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-address-book me-2"></i>จัดการข้อมูลการติดต่อ</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">จัดการข้อมูลการติดต่อของแต่ละหน่วยงาน</p>
+                <a href="{{ url_for('admin_contacts') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-cog me-2"></i>จัดการข้อมูลติดต่อ
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Info -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>ข้อมูลระบบ</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>ชื่อระบบ:</strong> ระบบจัดการไฟล์แผนกอายุรกรรม</p>
+                        <p><strong>เวอร์ชัน:</strong> 1.0.0</p>
+                        <p><strong>ฐานข้อมูล:</strong> SQLite</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>ผู้พัฒนา:</strong> © 2025 Directed by Uradev</p>
+                        <p><strong>วันที่อัปเดต:</strong> 26/08/2025</p>
+                        <p><strong>สถานะ:</strong> <span class="badge bg-success">ทำงานปกติ</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

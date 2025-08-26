@@ -1,0 +1,316 @@
+/* Custom CSS for Hospital Management System */
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --purple-color: #6f42c1;
+}
+
+body {
+    font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    border-bottom: none;
+    border-radius: 10px 10px 0 0 !important;
+    font-weight: 600;
+}
+
+/* Department Cards */
+.department-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.department-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.department-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* รูปภาพหน่วยไต */
+.department-icon img {
+    transition: all 0.3s ease;
+}
+
+.department-icon img:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+}
+
+/* Tables */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: var(--light-color);
+    border-bottom: 2px solid var(--primary-color);
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Tabs */
+.nav-tabs {
+    border-bottom: 2px solid var(--light-color);
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-radius: 8px 8px 0 0;
+    font-weight: 500;
+    color: var(--secondary-color);
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    border: none;
+    color: var(--primary-color);
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+.nav-tabs .nav-link.active {
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+/* Forms */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+/* Alerts */
+.alert {
+    border: none;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+/* Knowledge Items */
+.knowledge-item {
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.knowledge-item:hover {
+    background-color: #e9ecef;
+    transform: translateX(5px);
+}
+
+.knowledge-content {
+    line-height: 1.6;
+}
+
+/* Statistics Cards */
+.card.bg-primary, .card.bg-success, .card.bg-info, .card.bg-warning {
+    transition: all 0.3s ease;
+}
+
+.card.bg-primary:hover, .card.bg-success:hover, .card.bg-info:hover, .card.bg-warning:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: var(--secondary-color);
+}
+
+/* Footer */
+footer {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-top: 2px solid var(--primary-color);
+    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+}
+
+footer .container {
+    position: relative;
+}
+
+footer p {
+    line-height: 1.4;
+    font-size: 0.85rem;
+}
+
+footer .small {
+    font-size: 0.8rem !important;
+}
+
+/* Responsive footer */
+@media (max-width: 768px) {
+    footer .col-md-6 {
+        margin-bottom: 0.5rem;
+    }
+    
+    footer .text-md-start,
+    footer .text-md-end {
+        text-align: center !important;
+    }
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .display-5 {
+        font-size: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* File Upload */
+.file-upload-area {
+    border: 2px dashed var(--primary-color);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.file-upload-area:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+    border-color: var(--success-color);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #0b5ed7;
+}
+
+/* Print Styles */
+@media print {
+    .navbar, .btn, .no-print {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #000;
+        box-shadow: none;
+    }
+}

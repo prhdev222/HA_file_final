@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}{{ department.name }} - ระบบจัดการไฟล์แผนกอายุรกรรม{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('home') }}">หน้าแรก</a></li>
+                <li class="breadcrumb-item active">{{ department.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <h1 class="display-5 text-primary">
+                    {% if department.code == 'DM' %}
+                        <i class="fas fa-syringe me-3"></i>
+                    {% elif department.code == 'COPD' %}
+                        <i class="fas fa-lungs me-3"></i>
+                    {% elif department.code == 'UGIB' %}
+                        <i class="fas fa-tint me-3"></i>
+                    {% elif department.code == 'CKD' %}
+                        <img src="{{ url_for('static', filename='images/kidney.svg') }}" alt="หน่วยไตเรื้อรัง" style="width: 60px; height: 60px; object-fit: contain; margin-right: 1rem;">
+                    {% elif department.code == 'STEMI_NSTEMI' %}
+                        <i class="fas fa-heartbeat me-3"></i>
+                    {% elif department.code == 'STROKE' %}
+                        <i class="fas fa-brain me-3"></i>
+                    {% elif department.code == 'TB' %}
+                        <i class="fas fa-bacteria me-3"></i>
+                    {% elif department.code == 'CHEMO' %}
+                        <i class="fas fa-pills me-3"></i>
+                    {% elif department.code == 'HTN' %}
+                        <i class="fas fa-heart-pulse me-3"></i>
+                    {% endif %}
+                    {{ department.name }}
+                </h1>
+                <p class="lead">{{ department.description }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation Tabs -->
+<ul class="nav nav-tabs" id="departmentTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="guidelines-tab" data-bs-toggle="tab" data-bs-target="#guidelines" type="button" role="tab">
+            <i class="fas fa-file-medical me-2"></i>Guidelines
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="knowledge-tab" data-bs-toggle="tab" data-bs-target="#knowledge" type="button" role="tab">
+            <i class="fas fa-book-medical me-2"></i>ความรู้
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="activities-tab" data-bs-toggle="tab" data-bs-target="#activities" type="button" role="tab">
+            <i class="fas fa-calendar-alt me-2"></i>กิจกรรม
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab">
+            <i class="fas fa-address-book me-2"></i>ติดต่อ
+        </button>
+    </li>
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content" id="departmentTabContent">
+    <!-- Guidelines Tab -->
+    <div class="tab-pane fade show active" id="guidelines" role="tabpanel">
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-file-medical me-2"></i>ไฟล์ Guidelines</h5>
+            </div>
+            <div class="card-body">
+                {% if department.guidelines %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ชื่อไฟล์</th>
+                                    <th>ประเภท</th>
+                                    <th>ขนาด/ลิงก์</th>
+                                    <th>วันที่อัปโหลด</th>
+                                    <th>คำอธิบาย</th>
+                                    <th>การดำเนินการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for guideline in department.guidelines %}
+                                <tr>
+                                    <td>
+                                        {% if guideline.external_link %}
+                                            <i class="fas fa-link me-2 text-primary"></i>
+                                        {% else %}
+                                            <i class="fas fa-file-pdf me-2 text-danger"></i>
+                                        {% endif %}
+                                        {{ guideline.title }}
+                                    </td>
+                                    <td>
+                                        {% if guideline.external_link %}
+                                            <span class="badge bg-success">{{ guideline.link_type or 'External Link' }}</span>
+                                        {% else %}
+                                            <span class="badge bg-info">ไฟล์</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if guideline.external_link %}
+                                            <a href="{{ guideline.external_link }}" target="_blank" class="text-primary">
+                                                <i class="fas fa-external-link-alt me-1"></i>เปิดลิงก์
+                                            </a>
+                                        {% else %}
+                                            {{ (guideline.file_size / 1024 / 1024) | round(2) }} MB
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ guideline.upload_date.strftime('%d/%m/%Y') }}</td>
+                                    <td>{{ guideline.description or '-' }}</td>
+                                    <td>
+                                        {% if guideline.external_link %}
+                                            <a href="{{ guideline.external_link }}" target="_blank" 
+                                               class="btn btn-sm btn-primary">
+                                                <i class="fas fa-external-link-alt me-1"></i>เปิดลิงก์
+                                            </a>
+                                        {% else %}
+                                            <a href="{{ url_for('download_guideline', guideline_id=guideline.id) }}" 
+                                               class="btn btn-sm btn-primary">
+                                                <i class="fas fa-download me-1"></i>ดาวน์โหลด
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-file-medical fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">ยังไม่มีไฟล์ guidelines สำหรับหน่วยงานนี้</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Knowledge Tab -->
+    <div class="tab-pane fade" id="knowledge" role="tabpanel">
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-book-medical me-2"></i>ความรู้และข้อมูลเฉพาะทาง</h5>
+            </div>
+            <div class="card-body">
+                {% if department.knowledge %}
+                    {% for knowledge in department.knowledge %}
+                    <div class="knowledge-item mb-4 p-3 border rounded">
+                        <h6 class="text-primary">{{ knowledge.title }}</h6>
+                        <div class="text-muted small mb-2">
+                            <i class="fas fa-calendar me-1"></i>อัปเดตเมื่อ: {{ knowledge.updated_at.strftime('%d/%m/%Y %H:%M') }}
+                        </div>
+                        <div class="knowledge-content">
+                            {{ knowledge.content | safe }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-book-medical fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">ยังไม่มีข้อมูลความรู้สำหรับหน่วยงานนี้</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Activities Tab -->
+    <div class="tab-pane fade" id="activities" role="tabpanel">
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>กิจกรรมของหน่วยงาน</h5>
+            </div>
+            <div class="card-body">
+                {% if department.activities %}
+                    <div class="row">
+                        {% for activity in department.activities %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-primary">{{ activity.title }}</h6>
+                                    <p class="card-text">{{ activity.description }}</p>
+                                    {% if activity.activity_date %}
+                                    <div class="text-muted small">
+                                        <i class="fas fa-calendar me-1"></i>{{ activity.activity_date.strftime('%d/%m/%Y') }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">ยังไม่มีข้อมูลกิจกรรมสำหรับหน่วยงานนี้</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Tab -->
+    <div class="tab-pane fade" id="contact" role="tabpanel">
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-address-book me-2"></i>ข้อมูลการติดต่อ</h5>
+            </div>
+            <div class="card-body">
+                {% if department.contacts %}
+                    {% for contact in department.contacts %}
+                    <div class="row">
+                        {% if contact.line_id %}
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-line fa-2x text-success me-3"></i>
+                                <div>
+                                    <strong>LINE ID:</strong><br>
+                                    {{ contact.line_id }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if contact.email %}
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-envelope fa-2x text-primary me-3"></i>
+                                <div>
+                                    <strong>อีเมล:</strong><br>
+                                    <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if contact.phone %}
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-phone fa-2x text-success me-3"></i>
+                                <div>
+                                    <strong>เบอร์โทร:</strong><br>
+                                    <a href="tel:{{ contact.phone }}">{{ contact.phone }}</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if contact.other_contact %}
+                        <div class="col-12 mb-3">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-info-circle fa-2x text-info me-3 mt-1"></i>
+                                <div>
+                                    <strong>ข้อมูลเพิ่มเติม:</strong><br>
+                                    {{ contact.other_contact }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-address-book fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">ยังไม่มีข้อมูลการติดต่อสำหรับหน่วยงานนี้</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

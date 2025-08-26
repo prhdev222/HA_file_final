@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}เข้าสู่ระบบ - ระบบจัดการไฟล์แผนกอายุรกรรม{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-shield me-2"></i>เข้าสู่ระบบแอดมิน
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">ชื่อผู้ใช้</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label">รหัสผ่าน</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>เข้าสู่ระบบ
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('home') }}" class="text-decoration-none">
+                        <i class="fas fa-arrow-left me-1"></i>กลับไปหน้าแรก
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-body text-center">
+                <h6 class="text-muted">ข้อมูลเข้าสู่ระบบเริ่มต้น</h6>
+                <p class="small text-muted mb-1">Username: <strong>admin</strong></p>
+                <p class="small text-muted mb-0">Password: <strong>admin123</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

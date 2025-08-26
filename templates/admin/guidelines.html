@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}จัดการ Guidelines - ระบบจัดการไฟล์แผนกอายุรกรรม{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">แดชบอร์ด</a></li>
+                <li class="breadcrumb-item active">จัดการ Guidelines</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="mb-0">
+            <i class="fas fa-file-medical me-2"></i>จัดการ Guidelines
+        </h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('upload_guideline') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>เพิ่ม Guidelines ใหม่
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-list me-2"></i>รายการ Guidelines ทั้งหมด</h5>
+    </div>
+    <div class="card-body">
+        {% if guidelines %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ชื่อไฟล์</th>
+                            <th>หน่วยงาน</th>
+                            <th>ประเภท</th>
+                            <th>ขนาด/ลิงก์</th>
+                            <th>วันที่อัปโหลด</th>
+                            <th>คำอธิบาย</th>
+                            <th>การดำเนินการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for guideline in guidelines %}
+                        <tr>
+                            <td>
+                                {% if guideline.external_link %}
+                                    <i class="fas fa-link me-2 text-primary"></i>
+                                {% else %}
+                                    <i class="fas fa-file-pdf me-2 text-danger"></i>
+                                {% endif %}
+                                {{ guideline.title }}
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">{{ guideline.department.code }}</span>
+                                {{ guideline.department.name }}
+                            </td>
+                            <td>
+                                {% if guideline.external_link %}
+                                    <span class="badge bg-success">{{ guideline.link_type or 'External Link' }}</span>
+                                {% else %}
+                                    <span class="badge bg-info">ไฟล์</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if guideline.external_link %}
+                                    <a href="{{ guideline.external_link }}" target="_blank" class="text-primary">
+                                        <i class="fas fa-external-link-alt me-1"></i>เปิดลิงก์
+                                    </a>
+                                {% else %}
+                                    {{ (guideline.file_size / 1024 / 1024) | round(2) }} MB
+                                {% endif %}
+                            </td>
+                            <td>{{ guideline.upload_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ guideline.description or '-' }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    {% if guideline.external_link %}
+                                        <a href="{{ guideline.external_link }}" target="_blank" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ url_for('download_guideline', guideline_id=guideline.id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    {% endif %}
+                                    <button type="button" class="btn btn-sm btn-outline-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-file-medical fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">ยังไม่มีไฟล์ Guidelines</h5>
+                <p class="text-muted">เริ่มต้นโดยการเพิ่มไฟล์ Guidelines ใหม่</p>
+                <a href="{{ url_for('upload_guideline') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>เพิ่ม Guidelines แรก
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
