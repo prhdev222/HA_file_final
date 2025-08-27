@@ -63,6 +63,12 @@ Thumbs.db
 .env.test.local
 .env.production.local
 
+# Keep example file
+!env.example
+
 # Temporary files
 *.tmp
 *.temp
+
+# Admin credentials (ไม่ควรอัปโหลดไป GitHub)
+ADMIN_CREDENTIALS.md

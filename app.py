@@ -6,13 +6,19 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import os
 from datetime import datetime, timezone
 import mimetypes
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hospital.db'
+
+# Configuration from environment variables
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///hospital.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'storage/uploads'
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
+app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER', 'storage/uploads')
+app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_CONTENT_LENGTH', 50 * 1024 * 1024))  # 50MB max file size
 
 # สร้างโฟลเดอร์ storage ถ้ายังไม่มี
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -261,11 +267,15 @@ def init_db():
             for dept in departments:
                 db.session.add(dept)
             
-            # สร้างแอดมินเริ่มต้น
+            # สร้างแอดมินเริ่มต้นจาก environment variables
+            admin_username = os.getenv('ADMIN_USERNAME', 'admin')
+            admin_password = os.getenv('ADMIN_PASSWORD', 'admin123')
+            admin_email = os.getenv('ADMIN_EMAIL', 'admin@hospital.local')
+            
             admin = AdminUser(
-                username='admin',
-                password_hash=generate_password_hash('admin123'),
-                email='admin@hospital.local'
+                username=admin_username,
+                password_hash=generate_password_hash(admin_password),
+                email=admin_email
             )
             db.session.add(admin)
             
@@ -273,4 +283,10 @@ def init_db():
 
 if __name__ == '__main__':
     init_db()
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    
+    # ใช้ environment variables สำหรับ host และ port
+    host = os.getenv('HOST', '0.0.0.0')
+    port = int(os.getenv('PORT', 5001))
+    debug = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'
+    
+    app.run(host=host, port=port, debug=debug)
