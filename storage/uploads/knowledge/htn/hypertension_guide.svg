@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <defs>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; fill: #f44336; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 14px; fill: #333; }
+      .content { font-family: Arial, sans-serif; font-size: 12px; fill: #666; }
+      .icon-bg { fill: #ffebee; stroke: #f44336; stroke-width: 2; }
+      .icon-text { font-family: Arial, sans-serif; font-size: 24px; fill: #f44336; }
+    </style>
+  </defs>
+  
+  <!-- พื้นหลัง -->
+  <rect x="0" y="0" width="400" height="300" fill="#fafafa"/>
+  
+  <!-- หัวข้อหลัก -->
+  <text x="200" y="30" text-anchor="middle" class="title">การจัดการความดันโลหิตสูง</text>
+  <text x="200" y="50" text-anchor="middle" class="subtitle">Hypertension Management</text>
+  
+  <!-- ไอคอนหลัก -->
+  <circle cx="200" cy="100" r="40" class="icon-bg"/>
+  <text x="200" y="110" text-anchor="middle" class="icon-text">❤️</text>
+  
+  <!-- ข้อมูลสำคัญ -->
+  <rect x="50" y="160" width="300" height="120" fill="white" stroke="#e0e0e0" stroke-width="1" rx="8"/>
+  
+  <text x="70" y="185" class="subtitle">📊 ระดับความดันโลหิต:</text>
+  <text x="70" y="205" class="content">• ปกติ: &lt;120/80 mmHg</text>
+  <text x="70" y="220" class="content">• สูง: ≥130/80 mmHg</text>
+  
+  <text x="70" y="245" class="subtitle">💊 การรักษา:</text>
+  <text x="70" y="260" class="content">• ลดเกลือในอาหาร</text>
+  <text x="70" y="275" class="content">• ออกกำลังกายสม่ำเสมอ</text>
+  
+  <!-- หน่วยงาน -->
+  <text x="200" y="290" text-anchor="middle" class="content">หน่วยความดันโลหิตสูง - แผนกอายุรกรรม โรงพยาบาลสงฆ์</text>
+</svg>

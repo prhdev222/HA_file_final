@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <defs>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; fill: #4caf50; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 14px; fill: #333; }
+      .content { font-family: Arial, sans-serif; font-size: 12px; fill: #666; }
+      .event-bg { fill: #e8f5e8; stroke: #4caf50; stroke-width: 2; rx: 8; }
+      .date-bg { fill: #4caf50; }
+      .date-text { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: white; }
+    </style>
+  </defs>
+  
+  <!-- พื้นหลัง -->
+  <rect x="0" y="0" width="400" height="300" fill="#fafafa"/>
+  
+  <!-- หัวข้อหลัก -->
+  <text x="200" y="30" text-anchor="middle" class="title">กิจกรรมให้ความรู้โรคเบาหวาน</text>
+  <text x="200" y="50" text-anchor="middle" class="subtitle">Diabetes Education Workshop</text>
+  
+  <!-- วันที่กิจกรรม -->
+  <rect x="150" y="70" width="100" height="30" class="date-bg" rx="15"/>
+  <text x="200" y="90" text-anchor="middle" class="date-text">15 กันยายน 2025</text>
+  
+  <!-- รายละเอียดกิจกรรม -->
+  <rect x="50" y="120" width="300" height="150" class="event-bg"/>
+  
+  <text x="70" y="145" class="subtitle">📅 เวลา:</text>
+  <text x="70" y="160" class="content">09:00 - 12:00 น.</text>
+  
+  <text x="70" y="185" class="subtitle">📍 สถานที่:</text>
+  <text x="70" y="200" class="content">ห้องประชุมแผนกอายุรกรรม</text>
+  
+  <text x="70" y="225" class="subtitle">👥 กลุ่มเป้าหมาย:</text>
+  <text x="70" y="240" class="content">ผู้ป่วยเบาหวานและญาติ</text>
+  
+  <text x="70" y="265" class="content">• การควบคุมอาหาร</text>
+  <text x="70" y="280" class="content">• การออกกำลังกาย</text>
+  
+  <!-- หน่วยงาน -->
+  <text x="200" y="290" text-anchor="middle" class="content">หน่วยเบาหวาน - แผนกอายุรกรรม โรงพยาบาลสงฆ์</text>
+</svg>

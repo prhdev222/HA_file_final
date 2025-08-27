@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <style>
+      .icon { font-family: Arial, sans-serif; font-size: 12px; fill: #333; }
+      .dept-box { fill: #e3f2fd; stroke: #2196f3; stroke-width: 2; rx: 8; }
+      .dept-title { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #1976d2; }
+    </style>
+  </defs>
+  
+  <!-- หน่วยเบาหวาน (DM) -->
+  <rect x="50" y="50" width="120" height="80" class="dept-box"/>
+  <text x="110" y="75" text-anchor="middle" class="dept-title">DM</text>
+  <text x="110" y="95" text-anchor="middle" class="icon">เบาหวาน</text>
+  
+  <!-- หน่วยปอดอุดกั้นเรื้อรัง (COPD) -->
+  <rect x="200" y="50" width="120" height="80" class="dept-box"/>
+  <text x="260" y="75" text-anchor="middle" class="dept-title">COPD</text>
+  <text x="260" y="95" text-anchor="middle" class="icon">ปอดอุดกั้น</text>
+  
+  <!-- หน่วยเลือดออกทางเดินอาหาร (UGIB) -->
+  <rect x="350" y="50" width="120" height="80" class="dept-box"/>
+  <text x="410" y="75" text-anchor="middle" class="dept-title">UGIB</text>
+  <text x="410" y="95" text-anchor="middle" class="icon">เลือดออก</text>
+  
+  <!-- หน่วยไตเรื้อรัง (CKD) -->
+  <rect x="500" y="50" width="120" height="80" class="dept-box"/>
+  <text x="560" y="75" text-anchor="middle" class="dept-title">CKD</text>
+  <text x="560" y="95" text-anchor="middle" class="icon">ไตเรื้อรัง</text>
+  
+  <!-- หน่วยหัวใจขาดเลือด (STEMI/NSTEMI) -->
+  <rect x="650" y="50" width="120" height="80" class="dept-box"/>
+  <text x="710" y="75" text-anchor="middle" class="dept-title">STEMI</text>
+  <text x="710" y="95" text-anchor="middle" class="icon">หัวใจขาดเลือด</text>
+  
+  <!-- หน่วยโรคหลอดเลือดสมอง (STROKE) -->
+  <rect x="50" y="160" width="120" height="80" class="dept-box"/>
+  <text x="110" y="185" text-anchor="middle" class="dept-title">STROKE</text>
+  <text x="110" y="205" text-anchor="middle" class="icon">หลอดเลือดสมอง</text>
+  
+  <!-- หน่วยวัณโรค (TB) -->
+  <rect x="200" y="160" width="120" height="80" class="dept-box"/>
+  <text x="260" y="185" text-anchor="middle" class="dept-title">TB</text>
+  <text x="260" y="205" text-anchor="middle" class="icon">วัณโรค</text>
+  
+  <!-- หน่วยเคมีบำบัด (CHEMO) -->
+  <rect x="350" y="160" width="120" height="80" class="dept-box"/>
+  <text x="410" y="185" text-anchor="middle" class="dept-title">CHEMO</text>
+  <text x="410" y="205" text-anchor="middle" class="icon">เคมีบำบัด</text>
+  
+  <!-- หน่วยความดันโลหิตสูง (HTN) -->
+  <rect x="500" y="160" width="120" height="80" class="dept-box"/>
+  <text x="560" y="185" text-anchor="middle" class="dept-title">HTN</text>
+  <text x="560" y="205" text-anchor="middle" class="icon">ความดันโลหิตสูง</text>
+  
+  <!-- หน่วยภาวะติดเชื้อ (SEPSIS) -->
+  <rect x="650" y="160" width="120" height="80" class="dept-box"/>
+  <text x="710" y="185" text-anchor="middle" class="dept-title">SEPSIS</text>
+  <text x="710" y="205" text-anchor="middle" class="icon">ภาวะติดเชื้อ</text>
+  
+  <!-- หน่วยโรคข้อ (RHEUMATO) -->
+  <rect x="50" y="270" width="120" height="80" class="dept-box"/>
+  <text x="110" y="295" text-anchor="middle" class="dept-title">RHEUMATO</text>
+  <text x="110" y="315" text-anchor="middle" class="icon">โรคข้อ</text>
+  
+  <!-- หน่วยโรคอ้วน (OBESITY) -->
+  <rect x="200" y="270" width="120" height="80" class="dept-box"/>
+  <text x="260" y="295" text-anchor="middle" class="dept-title">OBESITY</text>
+  <text x="260" y="315" text-anchor="middle" class="icon">โรคอ้วน</text>
+  
+  <!-- ระบบจัดการไฟล์ -->
+  <rect x="350" y="270" width="200" height="80" class="dept-box" style="fill: #f3e5f5; stroke: #9c27b0;"/>
+  <text x="450" y="295" text-anchor="middle" class="dept-title" style="fill: #7b1fa2;">ระบบจัดการไฟล์</text>
+  <text x="450" y="315" text-anchor="middle" class="icon" style="fill: #7b1fa2;">แผนกอายุรกรรม</text>
+  <text x="450" y="330" text-anchor="middle" class="icon" style="fill: #7b1fa2;">โรงพยาบาลสงฆ์</text>
+  
+  <!-- คำอธิบายระบบ -->
+  <text x="400" y="400" text-anchor="middle" class="dept-title" style="font-size: 16px;">ระบบจัดการไฟล์แผนกอายุรกรรม โรงพยาบาลสงฆ์</text>
+  <text x="400" y="420" text-anchor="middle" class="icon">รองรับการจัดการ Guidelines, Knowledge, Activities และ Contacts</text>
+  <text x="400" y="440" text-anchor="middle" class="icon">สำหรับ 12 หน่วยงานในแผนกอายุรกรรม</text>
+  <text x="400" y="460" text-anchor="middle" class="icon">เวอร์ชัน 1.0.0 - วันที่อัปเดต: 26/08/2025</text>
+</svg>

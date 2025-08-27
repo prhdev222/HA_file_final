@@ -1,0 +1,1 @@
+# หน่วยstroke - Knowledge
