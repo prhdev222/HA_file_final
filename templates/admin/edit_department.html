@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}แก้ไขหน่วยงาน - แอดมิน{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-edit me-2"></i>แก้ไขข้อมูลหน่วยงาน</h2>
+                <a href="{{ url_for('admin_departments') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>กลับไปหน้าจัดการหน่วยงาน
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-hospital me-2"></i>ข้อมูลหน่วยงาน: {{ department.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">ชื่อหน่วยงาน *</label>
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           value="{{ department.name }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="code" class="form-label">รหัสหน่วยงาน *</label>
+                                    <input type="text" class="form-control" id="code" name="code" 
+                                           value="{{ department.code }}" required>
+                                    <div class="form-text">รหัสสั้นๆ สำหรับอ้างอิง เช่น DM, COPD, HTN</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">คำอธิบาย</label>
+                            <textarea class="form-control" id="description" name="description" 
+                                      rows="4">{{ department.description }}</textarea>
+                            <div class="form-text">คำอธิบายสั้นๆ เกี่ยวกับหน้าที่ของหน่วยงาน</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">วันที่สร้าง</label>
+                                    <input type="text" class="form-control" 
+                                           value="{{ department.created_at.strftime('%d/%m/%Y %H:%M') }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">วันที่อัปเดตล่าสุด</label>
+                                    <input type="text" class="form-control" 
+                                           value="{{ department.updated_at.strftime('%d/%m/%Y %H:%M') }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin_departments') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>ยกเลิก
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>บันทึกการเปลี่ยนแปลง
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ข้อมูลสถิติ -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Guidelines</h5>
+                            <h3>{{ department.guidelines|length }}</h3>
+                            <small>ไฟล์และลิงก์</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Knowledge</h5>
+                            <h3>{{ department.knowledge|length }}</h3>
+                            <small>บทความความรู้</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Activities</h5>
+                            <h3>{{ department.activities|length }}</h3>
+                            <small>กิจกรรม</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

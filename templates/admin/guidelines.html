@@ -92,10 +92,12 @@
                                             <i class="fas fa-download"></i>
                                         </a>
                                     {% endif %}
-                                    <button type="button" class="btn btn-sm btn-outline-warning">
+                                    <a href="{{ url_for('admin_edit_guideline', guideline_id=guideline.id) }}" 
+                                       class="btn btn-sm btn-outline-warning">
                                         <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger">
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            onclick="deleteGuideline({{ guideline.id }})">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -117,4 +119,17 @@
         {% endif %}
     </div>
 </div>
+
+<script>
+function deleteGuideline(id) {
+    if (confirm('คุณแน่ใจหรือไม่ที่จะลบ guideline นี้?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/guidelines/delete/${id}`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+
 {% endblock %}

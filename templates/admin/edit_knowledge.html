@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}แก้ไขบทความความรู้ - แอดมิน{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-edit me-2"></i>แก้ไขบทความความรู้</h2>
+                <a href="{{ url_for('admin_knowledge') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>กลับไปหน้าบทความความรู้
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-book me-2"></i>ข้อมูลบทความความรู้: {{ knowledge.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">หน่วยงาน</label>
+                                    <input type="text" class="form-control" value="{{ knowledge.department.name }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">หัวข้อ *</label>
+                                    <input type="text" class="form-control" id="title" name="title" 
+                                           value="{{ knowledge.title }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="content" class="form-label">เนื้อหา *</label>
+                            <textarea class="form-control" id="content" name="content" rows="4" 
+                                      maxlength="500" required placeholder="เนื้อหาบทความความรู้ (สูงสุด 500 ตัวอักษร)">{{ knowledge.content }}</textarea>
+                            <div class="form-text">
+                                <span id="charCount">{{ knowledge.content|length if knowledge.content else 0 }}</span>/500 ตัวอักษร
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">ประเภทการอัปโหลด</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="upload_type" id="content_only" value="content" 
+                                       {% if not knowledge.image_path and not knowledge.external_link %}checked{% endif %}>
+                                <label class="form-check-label" for="content_only">
+                                    เฉพาะเนื้อหา
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="upload_type" id="image_upload" value="image"
+                                       {% if knowledge.image_path %}checked{% endif %}>
+                                <label class="form-check-label" for="image_upload">
+                                    อัปโหลดรูปภาพ
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="upload_type" id="external_link" value="link"
+                                       {% if knowledge.external_link %}checked{% endif %}>
+                                <label class="form-check-label" for="external_link">
+                                    ลิงก์ภายนอก
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- ส่วนรูปภาพ -->
+                        <div id="imageSection" class="mb-3" style="display: {% if knowledge.image_path %}block{% else %}none{% endif %};">
+                            <label for="image" class="form-label">รูปภาพ</label>
+                            {% if knowledge.image_path %}
+                                <div class="mb-2">
+                                    <img src="{{ url_for('static', filename=knowledge.image_path.replace('storage/', '')) }}" 
+                                         alt="รูปภาพปัจจุบัน" class="img-thumbnail" style="max-width: 200px;">
+                                    <br><small class="text-muted">รูปภาพปัจจุบัน</small>
+                                </div>
+                            {% endif %}
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                            <div class="form-text">รองรับไฟล์รูปภาพ: JPG, PNG, GIF (สูงสุด 5MB)</div>
+                        </div>
+
+                        <!-- ส่วนลิงก์ภายนอก -->
+                        <div id="linkSection" class="mb-3" style="display: {% if knowledge.external_link %}block{% else %}none{% endif %};">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="external_link" class="form-label">ลิงก์ภายนอก</label>
+                                    <input type="url" class="form-control" id="external_link" name="external_link" 
+                                           value="{{ knowledge.external_link or '' }}" placeholder="https://example.com">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="link_type" class="form-label">ประเภทลิงก์</label>
+                                    <select class="form-select" id="link_type" name="link_type">
+                                        <option value="website" {% if knowledge.link_type == 'website' %}selected{% endif %}>เว็บไซต์</option>
+                                        <option value="youtube" {% if knowledge.link_type == 'youtube' %}selected{% endif %}>YouTube</option>
+                                        <option value="facebook" {% if knowledge.link_type == 'facebook' %}selected{% endif %}>Facebook</option>
+                                        <option value="line" {% if knowledge.link_type == 'line' %}selected{% endif %}>Line</option>
+                                        <option value="other" {% if knowledge.link_type == 'other' %}selected{% endif %}>อื่นๆ</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">วันที่สร้าง</label>
+                                    <input type="text" class="form-control" 
+                                           value="{{ knowledge.created_at.strftime('%d/%m/%Y %H:%M') }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">วันที่อัปเดตล่าสุด</label>
+                                    <input type="text" class="form-control" 
+                                           value="{{ knowledge.updated_at.strftime('%d/%m/%Y %H:%M') }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin_knowledge') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>ยกเลิก
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>บันทึกการเปลี่ยนแปลง
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contentTextarea = document.getElementById('content');
+    const charCount = document.getElementById('charCount');
+    const uploadTypeRadios = document.querySelectorAll('input[name="upload_type"]');
+    const imageSection = document.getElementById('imageSection');
+    const linkSection = document.getElementById('linkSection');
+
+    // นับตัวอักษร
+    contentTextarea.addEventListener('input', function() {
+        const remaining = 500 - this.value.length;
+        charCount.textContent = this.value.length;
+        
+        if (remaining < 50) {
+            charCount.style.color = 'red';
+        } else if (remaining < 100) {
+            charCount.style.color = 'orange';
+        } else {
+            charCount.style.color = 'inherit';
+        }
+    });
+
+    // แสดง/ซ่อนส่วนต่างๆ ตามประเภทการอัปโหลด
+    uploadTypeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            imageSection.style.display = 'none';
+            linkSection.style.display = 'none';
+            
+            if (this.value === 'image') {
+                imageSection.style.display = 'block';
+            } else if (this.value === 'link') {
+                linkSection.style.display = 'block';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

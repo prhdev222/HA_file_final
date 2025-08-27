@@ -38,6 +38,7 @@
                                     <tr>
                                         <th>ลำดับ</th>
                                         <th>ชื่อกิจกรรม</th>
+                                        <th>รูปภาพ/ลิงก์</th>
                                         <th>หน่วยงาน</th>
                                         <th>รายละเอียด</th>
                                         <th>วันที่กิจกรรม</th>
@@ -51,6 +52,35 @@
                                         <td>{{ loop.index }}</td>
                                         <td>
                                             <strong>{{ activity.title }}</strong>
+                                        </td>
+                                        <td>
+                                            {% if activity.image_path %}
+                                                <div class="text-center">
+                                                    <img src="{{ url_for('serve_storage', filename=activity.image_path.replace('storage/', '')) }}" 
+                                                         alt="รูปภาพ" class="img-thumbnail" style="max-width: 80px; cursor: pointer;"
+                                                         onclick="showImageModal('{{ url_for('serve_storage', filename=activity.image_path.replace('storage/', '')) }}', '{{ activity.title }}')">
+                                                    <br><small class="text-muted">คลิกเพื่อดูใหญ่</small>
+                                                </div>
+                                            {% elif activity.external_link %}
+                                                <div class="text-center">
+                                                    <a href="{{ activity.external_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-external-link-alt"></i>
+                                                        {% if activity.link_type == 'youtube' %}
+                                                            YouTube
+                                                        {% elif activity.link_type == 'facebook' %}
+                                                            Facebook
+                                                        {% elif activity.link_type == 'line' %}
+                                                            Line
+                                                        {% elif activity.link_type == 'registration' %}
+                                                            ลงทะเบียน
+                                                        {% else %}
+                                                            ลิงก์
+                                                        {% endif %}
+                                                    </a>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">ไม่มี</span>
+                                            {% endif %}
                                         </td>
                                         <td>
                                             <span class="badge bg-info">{{ activity.department.name }}</span>
@@ -72,10 +102,10 @@
                                         <td>{{ activity.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                        onclick="editActivity({{ activity.id }})">
+                                                <a href="{{ url_for('admin_edit_activity', activity_id=activity.id) }}" 
+                                                   class="btn btn-sm btn-outline-primary">
                                                     <i class="fas fa-edit"></i>
-                                                </button>
+                                                </a>
                                                 <button type="button" class="btn btn-sm btn-outline-danger" 
                                                         onclick="deleteActivity({{ activity.id }})">
                                                     <i class="fas fa-trash"></i>
@@ -99,84 +129,47 @@
 
             <!-- ปุ่มเพิ่มกิจกรรมใหม่ -->
             <div class="text-center mt-4">
-                <button type="button" class="btn btn-success btn-lg" onclick="addNewActivity()">
+                <a href="{{ url_for('admin_add_activity') }}" class="btn btn-success btn-lg">
                     <i class="fas fa-plus me-2"></i>เพิ่มกิจกรรมใหม่
-                </button>
+                </a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal สำหรับเพิ่ม/แก้ไขกิจกรรม -->
-<div class="modal fade" id="activityModal" tabindex="-1">
+<!-- Modal สำหรับแสดงรูปภาพใหญ่ -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="activityModalTitle">เพิ่มกิจกรรมใหม่</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="imageModalLabel">รูปภาพ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form id="activityForm">
-                    <div class="mb-3">
-                        <label for="activityTitle" class="form-label">ชื่อกิจกรรม *</label>
-                        <input type="text" class="form-control" id="activityTitle" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="activityDepartment" class="form-label">หน่วยงาน *</label>
-                        <select class="form-select" id="activityDepartment" required>
-                            <option value="">เลือกหน่วยงาน</option>
-                            <option value="1">หน่วยเบาหวาน</option>
-                            <option value="2">หน่วยปอดอุดกั้นเรื้อรัง</option>
-                            <option value="3">หน่วยเลือดออกทางเดินอาหารส่วนต้น</option>
-                            <option value="4">หน่วยไตเรื้อรัง</option>
-                            <option value="5">หน่วยหัวใจขาดเลือด</option>
-                            <option value="6">หน่วยโรคหลอดเลือดสมอง</option>
-                            <option value="7">หน่วยวัณโรค</option>
-                            <option value="8">หน่วยเคมีบำบัด</option>
-                            <option value="9">หน่วยความดันโลหิตสูง</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="activityDescription" class="form-label">รายละเอียด</label>
-                        <textarea class="form-control" id="activityDescription" rows="4" 
-                                  placeholder="ใส่รายละเอียดกิจกรรมที่นี่..."></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="activityDate" class="form-label">วันที่กิจกรรม</label>
-                        <input type="date" class="form-control" id="activityDate">
-                    </div>
-                </form>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="รูปภาพ" class="img-fluid">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                <button type="button" class="btn btn-primary" onclick="saveActivity()">บันทึก</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-function addNewActivity() {
-    document.getElementById('activityModalTitle').textContent = 'เพิ่มกิจกรรมใหม่';
-    document.getElementById('activityForm').reset();
-    new bootstrap.Modal(document.getElementById('activityModal')).show();
-}
-
-function editActivity(id) {
-    // TODO: ดึงข้อมูลกิจกรรมและแสดงในฟอร์ม
-    alert('ฟีเจอร์แก้ไขกิจกรรมจะเปิดใช้งานเร็วๆ นี้');
-}
-
 function deleteActivity(id) {
     if (confirm('คุณแน่ใจหรือไม่ที่จะลบกิจกรรมนี้?')) {
-        // TODO: ลบกิจกรรม
-        alert('ฟีเจอร์ลบกิจกรรมจะเปิดใช้งานเร็วๆ นี้');
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/activity/delete/${id}`;
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 
-function saveActivity() {
-    // TODO: บันทึกกิจกรรม
-    alert('ฟีเจอร์บันทึกกิจกรรมจะเปิดใช้งานเร็วๆ นี้');
+function showImageModal(imageSrc, title) {
+    document.getElementById('modalImage').src = imageSrc;
+    document.getElementById('imageModalLabel').textContent = title;
+    new bootstrap.Modal(document.getElementById('imageModal')).show();
 }
 </script>
 {% endblock %}
