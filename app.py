@@ -763,6 +763,29 @@ def init_db():
     with app.app_context():
         db.create_all()
         
+        # ===== Migration: เพิ่มคอลัมน์ที่ขาดในตารางเดิม =====
+        # db.create_all() ไม่เพิ่มคอลัมน์ใหม่ให้ตารางที่มีอยู่แล้ว
+        # ต้องใช้ ALTER TABLE เพิ่มเอง
+        migration_columns = [
+            ('knowledge', 'image_path', 'VARCHAR(500)'),
+            ('knowledge', 'external_link', 'VARCHAR(500)'),
+            ('knowledge', 'link_type', 'VARCHAR(50)'),
+            ('activity', 'image_path', 'VARCHAR(500)'),
+            ('activity', 'external_link', 'VARCHAR(500)'),
+            ('activity', 'link_type', 'VARCHAR(50)'),
+            ('guideline', 'external_link', 'VARCHAR(500)'),
+            ('guideline', 'link_type', 'VARCHAR(50)'),
+        ]
+        
+        for table, column, col_type in migration_columns:
+            try:
+                db.session.execute(
+                    db.text(f'ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column} {col_type}')
+                )
+            except Exception:
+                db.session.rollback()
+        db.session.commit()
+        
         # สร้างข้อมูลเริ่มต้น (departments)
         if db.session.query(Department).count() == 0:
             departments = [
