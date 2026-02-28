@@ -7,6 +7,9 @@ import os
 from datetime import datetime, timezone
 import mimetypes
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # Load environment variables
 load_dotenv()
@@ -15,16 +18,24 @@ app = Flask(__name__)
 
 # Configuration from environment variables
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///hospital.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER', 'storage/uploads')
-app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_CONTENT_LENGTH', 50 * 1024 * 1024))  # 50MB max file size
 
-# สร้างโฟลเดอร์ storage ถ้ายังไม่มี
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'guidelines'), exist_ok=True)
-os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'images'), exist_ok=True)
-os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'temp'), exist_ok=True)
+# Database: Use DATABASE_URL (Neon PostgreSQL) if provided, otherwise fallback to local SQLite
+database_url = os.getenv('DATABASE_URL')
+if database_url:
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hospital.db'
+    
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_CONTENT_LENGTH', 50 * 1024 * 1024))  # 50MB max
+
+# Cloudinary Config
+cloudinary_url = os.getenv('CLOUDINARY_URL')
+if cloudinary_url:
+    cloudinary.config()  # Automatically picks up CLOUDINARY_URL from env
+else:
+    print("Warning: CLOUDINARY_URL not found in environment. File uploads will fail.")
+
 
 db = SQLAlchemy(app)
 login_manager = LoginManager()
@@ -35,7 +46,7 @@ login_manager.login_view = 'admin_login'
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    code = db.Column(db.String(10), nullable=False, unique=True)
+    code = db.Column(db.String(50), nullable=False, unique=True)
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
@@ -82,7 +93,7 @@ class Contact(db.Model):
 class AdminUser(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(120), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     last_login = db.Column(db.DateTime)
@@ -114,8 +125,11 @@ def download_guideline(guideline_id):
     if guideline.external_link:
         return redirect(guideline.external_link)
     
-    # ถ้ามีไฟล์ให้ดาวน์โหลด
-    if guideline.file_path and os.path.exists(guideline.file_path):
+    # ถ้ามีไฟล์ (Cloudinary URL) ให้ redirect ไปที่ URL
+    if guideline.file_path and "cloudinary" in guideline.file_path:
+        return redirect(guideline.file_path)
+    # Fallback สำหรับไฟล์เก่าที่อยู่ในเครื่อง
+    elif guideline.file_path and os.path.exists(guideline.file_path):
         return send_file(guideline.file_path, as_attachment=True)
     
     flash('ไฟล์ไม่พบ', 'error')
@@ -179,28 +193,37 @@ def upload_guideline():
         if upload_type == 'file':
             file = request.files['file']
             if file and file.filename:
-                filename = secure_filename(file.filename)
-                dept = db.session.get(Department, department_id)
-                dept_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'guidelines', dept.code.lower())
-                os.makedirs(dept_folder, exist_ok=True)
-                
-                file_path = os.path.join(dept_folder, filename)
-                file.save(file_path)
-                
-                guideline = Guideline(
-                    department_id=department_id,
-                    title=title,
-                    file_path=file_path,
-                    file_size=os.path.getsize(file_path),
-                    description=description,
-                    external_link=None,
-                    link_type=None
-                )
-                db.session.add(guideline)
-                db.session.commit()
-                
-                flash('อัปโหลดไฟล์สำเร็จ', 'success')
-                return redirect(url_for('admin_guidelines'))
+                try:
+                    # Upload to Cloudinary
+                    dept = db.session.get(Department, department_id)
+                    folder_name = f"guidelines/{dept.code.lower()}"
+                    
+                    upload_result = cloudinary.uploader.upload(
+                        file,
+                        folder=folder_name,
+                        resource_type="auto" # Allows uploading pdfs, docs, etc.
+                    )
+                    
+                    file_url = upload_result.get("secure_url")
+                    file_size = upload_result.get("bytes")
+                    
+                    guideline = Guideline(
+                        department_id=department_id,
+                        title=title,
+                        file_path=file_url,
+                        file_size=file_size,
+                        description=description,
+                        external_link=None,
+                        link_type='Cloudinary'
+                    )
+                    db.session.add(guideline)
+                    db.session.commit()
+                    
+                    flash('อัปโหลดไฟล์ไปที่ Cloudinary สำเร็จ', 'success')
+                    return redirect(url_for('admin_guidelines'))
+                except Exception as e:
+                    flash(f'เกิดข้อผิดพลาดในการอัปโหลดไฟล์: {str(e)}', 'error')
+                    return redirect(request.url)
             else:
                 flash('กรุณาเลือกไฟล์', 'error')
         elif upload_type == 'link':
