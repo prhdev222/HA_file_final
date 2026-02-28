@@ -207,40 +207,29 @@ def admin_edit_guideline(guideline_id):
         if upload_type == 'file':
             file = request.files['file']
             if file and file.filename:
-                # ตรวจสอบขนาดไฟล์
-                file.seek(0, 2)
-                file_size = file.tell()
-                file.seek(0)
-                
-                if file_size > app.config['MAX_FILE_SIZE']:
-                    flash(f'ไฟล์มีขนาดใหญ่เกินไป (สูงสุด {app.config["MAX_FILE_SIZE"] // (1024*1024)} MB)', 'error')
+                try:
+                    # Upload to Cloudinary
+                    dept = db.session.get(Department, department_id)
+                    folder_name = f"guidelines/{dept.code.lower()}"
+                    
+                    upload_result = cloudinary.uploader.upload(
+                        file,
+                        folder=folder_name,
+                        resource_type="auto"
+                    )
+                    
+                    guideline.file_path = upload_result.get("secure_url")
+                    guideline.file_size = upload_result.get("bytes")
+                    guideline.external_link = None
+                    guideline.link_type = 'Cloudinary'
+                except Exception as e:
+                    flash(f'เกิดข้อผิดพลาดในการอัปโหลดไฟล์: {str(e)}', 'error')
                     return redirect(url_for('admin_edit_guideline', guideline_id=guideline_id))
-                
-                # ลบไฟล์เก่าถ้ามี
-                if guideline.file_path and os.path.exists(guideline.file_path):
-                    os.remove(guideline.file_path)
-                
-                filename = secure_filename(file.filename)
-                dept = db.session.get(Department, department_id)
-                dept_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'guidelines', dept.code.lower())
-                os.makedirs(dept_folder, exist_ok=True)
-                
-                file_path = os.path.join(dept_folder, filename)
-                file.save(file_path)
-                
-                guideline.file_path = file_path
-                guideline.file_size = file_size
-                guideline.external_link = None
-                guideline.link_type = None
         elif upload_type == 'link':
             external_link = request.form['external_link']
             link_type = request.form['link_type']
             
             if external_link:
-                # ลบไฟล์เก่าถ้ามี
-                if guideline.file_path and os.path.exists(guideline.file_path):
-                    os.remove(guideline.file_path)
-                
                 guideline.external_link = external_link
                 guideline.link_type = link_type
                 guideline.file_path = None
@@ -259,10 +248,6 @@ def admin_delete_guideline(guideline_id):
     guideline = db.session.get(Guideline, guideline_id)
     if guideline is None:
         abort(404)
-    
-    # ลบไฟล์ถ้ามี
-    if guideline.file_path and os.path.exists(guideline.file_path):
-        os.remove(guideline.file_path)
     
     db.session.delete(guideline)
     db.session.commit()
@@ -500,22 +485,29 @@ def admin_add_knowledge():
         if upload_type == 'image':
             image = request.files['image']
             if image and image.filename:
-                filename = secure_filename(image.filename)
-                dept = db.session.get(Department, department_id)
-                dept_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'knowledge', dept.code.lower())
-                os.makedirs(dept_folder, exist_ok=True)
-                
-                image_path = os.path.join(dept_folder, filename)
-                image.save(image_path)
-                
-                knowledge = Knowledge(
-                    department_id=department_id,
-                    title=title,
-                    content=content,
-                    image_path=image_path,
-                    external_link=None,
-                    link_type=None
-                )
+                try:
+                    dept = db.session.get(Department, department_id)
+                    folder_name = f"knowledge/{dept.code.lower()}"
+                    
+                    upload_result = cloudinary.uploader.upload(
+                        image,
+                        folder=folder_name,
+                        resource_type="image"
+                    )
+                    
+                    image_url = upload_result.get("secure_url")
+                    
+                    knowledge = Knowledge(
+                        department_id=department_id,
+                        title=title,
+                        content=content,
+                        image_path=image_url,
+                        external_link=None,
+                        link_type=None
+                    )
+                except Exception as e:
+                    flash(f'เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ: {str(e)}', 'error')
+                    return redirect(url_for('admin_add_knowledge'))
             else:
                 flash('กรุณาเลือกรูปภาพ', 'error')
                 return redirect(url_for('admin_add_knowledge'))
@@ -578,16 +570,22 @@ def admin_edit_knowledge(knowledge_id):
         if upload_type == 'image':
             image = request.files['image']
             if image and image.filename:
-                filename = secure_filename(image.filename)
-                dept = db.session.get(Department, knowledge.department_id)
-                dept_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'knowledge', dept.code.lower())
-                os.makedirs(dept_folder, exist_ok=True)
-                
-                image_path = os.path.join(dept_folder, filename)
-                image.save(image_path)
-                knowledge.image_path = image_path
-                knowledge.external_link = None
-                knowledge.link_type = None
+                try:
+                    dept = db.session.get(Department, knowledge.department_id)
+                    folder_name = f"knowledge/{dept.code.lower()}"
+                    
+                    upload_result = cloudinary.uploader.upload(
+                        image,
+                        folder=folder_name,
+                        resource_type="image"
+                    )
+                    
+                    knowledge.image_path = upload_result.get("secure_url")
+                    knowledge.external_link = None
+                    knowledge.link_type = None
+                except Exception as e:
+                    flash(f'เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ: {str(e)}', 'error')
+                    return redirect(url_for('admin_edit_knowledge', knowledge_id=knowledge_id))
         elif upload_type == 'link':
             external_link = request.form['external_link']
             link_type = request.form['link_type']
@@ -608,10 +606,6 @@ def admin_delete_knowledge(knowledge_id):
     knowledge = db.session.get(Knowledge, knowledge_id)
     if knowledge is None:
         abort(404)
-    
-    # ลบรูปภาพถ้ามี
-    if knowledge.image_path and os.path.exists(knowledge.image_path):
-        os.remove(knowledge.image_path)
     
     db.session.delete(knowledge)
     db.session.commit()
@@ -637,23 +631,30 @@ def admin_add_activity():
         if upload_type == 'image':
             image = request.files['image']
             if image and image.filename:
-                filename = secure_filename(image.filename)
-                dept = db.session.get(Department, department_id)
-                dept_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'activities', dept.code.lower())
-                os.makedirs(dept_folder, exist_ok=True)
-                
-                image_path = os.path.join(dept_folder, filename)
-                image.save(image_path)
-                
-                activity = Activity(
-                    department_id=department_id,
-                    title=title,
-                    description=description,
-                    activity_date=datetime.strptime(activity_date, '%Y-%m-%d').date(),
-                    image_path=image_path,
-                    external_link=None,
-                    link_type=None
-                )
+                try:
+                    dept = db.session.get(Department, department_id)
+                    folder_name = f"activities/{dept.code.lower()}"
+                    
+                    upload_result = cloudinary.uploader.upload(
+                        image,
+                        folder=folder_name,
+                        resource_type="image"
+                    )
+                    
+                    image_url = upload_result.get("secure_url")
+                    
+                    activity = Activity(
+                        department_id=department_id,
+                        title=title,
+                        description=description,
+                        activity_date=datetime.strptime(activity_date, '%Y-%m-%d').date(),
+                        image_path=image_url,
+                        external_link=None,
+                        link_type=None
+                    )
+                except Exception as e:
+                    flash(f'เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ: {str(e)}', 'error')
+                    return redirect(url_for('admin_add_activity'))
             else:
                 flash('กรุณาเลือกรูปภาพ', 'error')
                 return redirect(url_for('admin_add_activity'))
@@ -719,16 +720,22 @@ def admin_edit_activity(activity_id):
         if upload_type == 'image':
             image = request.files['image']
             if image and image.filename:
-                filename = secure_filename(image.filename)
-                dept = db.session.get(Department, activity.department_id)
-                dept_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'activities', dept.code.lower())
-                os.makedirs(dept_folder, exist_ok=True)
-                
-                image_path = os.path.join(dept_folder, filename)
-                image.save(image_path)
-                activity.image_path = image_path
-                activity.external_link = None
-                activity.link_type = None
+                try:
+                    dept = db.session.get(Department, activity.department_id)
+                    folder_name = f"activities/{dept.code.lower()}"
+                    
+                    upload_result = cloudinary.uploader.upload(
+                        image,
+                        folder=folder_name,
+                        resource_type="image"
+                    )
+                    
+                    activity.image_path = upload_result.get("secure_url")
+                    activity.external_link = None
+                    activity.link_type = None
+                except Exception as e:
+                    flash(f'เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ: {str(e)}', 'error')
+                    return redirect(url_for('admin_edit_activity', activity_id=activity_id))
         elif upload_type == 'link':
             external_link = request.form['external_link']
             link_type = request.form['link_type']
@@ -749,10 +756,6 @@ def admin_delete_activity(activity_id):
     activity = db.session.get(Activity, activity_id)
     if activity is None:
         abort(404)
-    
-    # ลบรูปภาพถ้ามี
-    if activity.image_path and os.path.exists(activity.image_path):
-        os.remove(activity.image_path)
     
     db.session.delete(activity)
     db.session.commit()
