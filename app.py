@@ -793,10 +793,20 @@ def init_db():
         admin = db.session.query(AdminUser).first()
         
         if admin:
-            # อัปเดต username, email, password ให้ตรงกับ env var
-            admin.username = admin_username
-            admin.email = admin_email
-            admin.password_hash = generate_password_hash(admin_password)
+            # เช็คว่า credentials เปลี่ยนจริงไหม ถ้าตรงแล้วก็ไม่ต้องอัปเดต
+            needs_update = False
+            if admin.username != admin_username:
+                admin.username = admin_username
+                needs_update = True
+            if admin.email != admin_email:
+                admin.email = admin_email
+                needs_update = True
+            if not check_password_hash(admin.password_hash, admin_password):
+                admin.password_hash = generate_password_hash(admin_password)
+                needs_update = True
+            
+            if needs_update:
+                db.session.commit()
         else:
             # ยังไม่มี admin → สร้างใหม่
             admin = AdminUser(
@@ -805,8 +815,7 @@ def init_db():
                 email=admin_email
             )
             db.session.add(admin)
-        
-        db.session.commit()
+            db.session.commit()
 
 # เรียก init_db() ที่ module level เพื่อให้ Vercel เรียกได้ด้วย
 init_db()
