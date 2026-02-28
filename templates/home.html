@@ -45,6 +45,12 @@
                         <i class="fas fa-pills fa-3x text-purple"></i>
                     {% elif dept.code == 'HTN' %}
                         <i class="fas fa-heart-pulse fa-3x text-danger"></i>
+                    {% elif dept.code == 'SEPSIS' %}
+                        <i class="fas fa-virus fa-3x text-warning"></i>
+                    {% elif dept.code == 'RHEUMATO' %}
+                        <i class="fas fa-bone fa-3x text-info"></i>
+                    {% elif dept.code == 'OBESITY' %}
+                        <i class="fas fa-weight fa-3x text-secondary"></i>
                     {% endif %}
                 </div>
                 <h5 class="card-title">{{ dept.name }}</h5>

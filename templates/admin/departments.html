@@ -195,20 +195,35 @@
 
 <script>
 function editDepartment(id) {
-    // TODO: ดึงข้อมูลหน่วยงานและแสดงในฟอร์ม
-    alert('ฟีเจอร์แก้ไขหน่วยงานจะเปิดใช้งานเร็วๆ นี้');
+    // ไปยังหน้าแก้ไขหน่วยงาน
+    window.location.href = `/admin/departments/edit/${id}`;
 }
 
 function deleteDepartment(id) {
     if (confirm('คุณแน่ใจหรือไม่ที่จะลบหน่วยงานนี้? การลบจะลบข้อมูลที่เกี่ยวข้องทั้งหมด (Guidelines, Knowledge, Activities, Contacts)')) {
-        // TODO: ลบหน่วยงาน
-        alert('ฟีเจอร์ลบหน่วยงานจะเปิดใช้งานเร็วๆ นี้');
+        // สร้างฟอร์มสำหรับลบ
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/departments/delete/${id}`;
+        
+        // เพิ่ม CSRF token ถ้าจำเป็น
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrf_token';
+            csrfInput.value = csrfToken.getAttribute('content');
+            form.appendChild(csrfInput);
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 
 function saveDepartmentEdit() {
-    // TODO: บันทึกการแก้ไขหน่วยงาน
-    alert('ฟีเจอร์บันทึกการแก้ไขหน่วยงานจะเปิดใช้งานเร็วๆ นี้');
+    // ฟังก์ชันนี้จะถูกเรียกจากหน้า edit_department.html
+    document.getElementById('editDepartmentForm').submit();
 }
 </script>
 {% endblock %}

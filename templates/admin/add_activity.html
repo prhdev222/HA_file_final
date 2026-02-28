@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}เพิ่มกิจกรรม - แอดมิน{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-calendar-alt me-2"></i>เพิ่มกิจกรรมใหม่</h2>
+                <a href="{{ url_for('admin_activities') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>กลับไปหน้ากิจกรรม
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-plus me-2"></i>ข้อมูลกิจกรรม</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="department_id" class="form-label">หน่วยงาน *</label>
+                                    <select class="form-select" id="department_id" name="department_id" required>
+                                        <option value="">เลือกหน่วยงาน</option>
+                                        {% for dept in departments %}
+                                        <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">หัวข้อกิจกรรม *</label>
+                                    <input type="text" class="form-control" id="title" name="title" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="activity_date" class="form-label">วันที่กิจกรรม *</label>
+                                    <input type="date" class="form-control" id="activity_date" name="activity_date" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">ประเภทการอัปโหลด</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="upload_type" id="content_only" value="content" checked>
+                                        <label class="form-check-label" for="content_only">
+                                            เฉพาะข้อมูล
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="upload_type" id="image_upload" value="image">
+                                        <label class="form-check-label" for="image_upload">
+                                            อัปโหลดรูปภาพ
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="upload_type" id="external_link" value="link">
+                                        <label class="form-check-label" for="external_link">
+                                            ลิงก์ภายนอก
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">คำอธิบาย *</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" 
+                                      maxlength="300" required placeholder="คำอธิบายกิจกรรม (สูงสุด 300 ตัวอักษร)"></textarea>
+                            <div class="form-text">
+                                <span id="charCount">0</span>/300 ตัวอักษร
+                            </div>
+                        </div>
+
+                        <!-- ส่วนรูปภาพ -->
+                        <div id="imageSection" class="mb-3" style="display: none;">
+                            <label for="image" class="form-label">รูปภาพกิจกรรม</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                            <div class="form-text">รองรับไฟล์รูปภาพ: JPG, PNG, GIF (สูงสุด 5MB)</div>
+                        </div>
+
+                        <!-- ส่วนลิงก์ภายนอก -->
+                        <div id="linkSection" class="mb-3" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="external_link" class="form-label">ลิงก์ภายนอก</label>
+                                    <input type="url" class="form-control" id="external_link" name="external_link" 
+                                           placeholder="https://example.com">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="link_type" class="form-label">ประเภทลิงก์</label>
+                                    <select class="form-select" id="link_type" name="link_type">
+                                        <option value="website">เว็บไซต์</option>
+                                        <option value="youtube">YouTube</option>
+                                        <option value="facebook">Facebook</option>
+                                        <option value="line">Line</option>
+                                        <option value="registration">ลงทะเบียน</option>
+                                        <option value="other">อื่นๆ</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin_activities') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>ยกเลิก
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>บันทึกกิจกรรม
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const descriptionTextarea = document.getElementById('description');
+    const charCount = document.getElementById('charCount');
+    const uploadTypeRadios = document.querySelectorAll('input[name="upload_type"]');
+    const imageSection = document.getElementById('imageSection');
+    const linkSection = document.getElementById('linkSection');
+
+    // ตั้งค่าวันที่เริ่มต้นเป็นวันนี้
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('activity_date').value = today;
+
+    // นับตัวอักษร
+    descriptionTextarea.addEventListener('input', function() {
+        const remaining = 300 - this.value.length;
+        charCount.textContent = this.value.length;
+        
+        if (remaining < 30) {
+            charCount.style.color = 'red';
+        } else if (remaining < 60) {
+            charCount.style.color = 'orange';
+        } else {
+            charCount.style.color = 'inherit';
+        }
+    });
+
+    // แสดง/ซ่อนส่วนต่างๆ ตามประเภทการอัปโหลด
+    uploadTypeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            imageSection.style.display = 'none';
+            linkSection.style.display = 'none';
+            
+            if (this.value === 'image') {
+                imageSection.style.display = 'block';
+            } else if (this.value === 'link') {
+                linkSection.style.display = 'block';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
